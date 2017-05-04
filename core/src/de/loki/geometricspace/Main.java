@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -61,7 +62,7 @@ public class Main extends ApplicationAdapter {
 		particles = new Array<Particle>();
 
 		for(int i = 0; i<3; i++){
-			particles.add(new Particle(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight()), MathUtils.random(500, 1000), ParticleType.getRandomParticletype()));
+			particles.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), MathUtils.random(500, 1000), ParticleType.getRandomParticletype()));
 		}
 
 	}

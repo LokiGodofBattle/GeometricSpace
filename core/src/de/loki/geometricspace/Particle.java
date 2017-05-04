@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ShortArray;
 
 /**
@@ -14,8 +15,7 @@ import com.badlogic.gdx.utils.ShortArray;
  */
 public class Particle {
 
-    private float x;
-    private float y;
+    private Vector2 position;
     private float mass;
     private ParticleType type;
     private Polygon polygon;
@@ -23,9 +23,8 @@ public class Particle {
     private PolygonRegion polyRegion;
     private PolygonSprite polygonSprite;
 
-    public Particle(float x, float y, float mass, ParticleType type){
-        this.x = x;
-        this.y = y;
+    public Particle(Vector2 position, float mass, ParticleType type){
+        this.position = position;
         this.mass = mass;
         this.type = type;
 
@@ -40,14 +39,14 @@ public class Particle {
 
             float h = (float) (Math.sqrt(Math.pow(edge, 2)- Math.pow(edge/2, 2)));
 
-            polygon = new Polygon(new float[]{x-edge/2, y-h/2, x+edge/2, y-h/2, x, y+h/2});
+            polygon = new Polygon(new float[]{position.x-edge/2, position.y-h/2, position.x+edge/2, position.y-h/2, position.x, position.y+h/2});
         }
 
     }
 
     public void draw(ShapeRenderer shapeRenderer, PolygonSpriteBatch polyBatch, EarClippingTriangulator triangulator, TextureRegion textureRegion){
-        if(type == ParticleType.Rectangle) shapeRenderer.rect(x - edge / 2, y - edge / 2, edge, edge);
-        else if(type == ParticleType.Circle) shapeRenderer.circle(x, y, edge);
+        if(type == ParticleType.Rectangle) shapeRenderer.rect(position.x - edge / 2, position.y - edge / 2, edge, edge);
+        else if(type == ParticleType.Circle) shapeRenderer.circle(position.x, position.y, edge);
         else if(type == ParticleType.Triangle){
             ShortArray indices = triangulator.computeTriangles(polygon.getVertices());
             polyRegion = new PolygonRegion(textureRegion, polygon.getVertices(), indices.toArray());
