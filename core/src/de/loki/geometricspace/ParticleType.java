@@ -17,7 +17,7 @@ public enum ParticleType {
         this.value = value;
     }
 
-    public static ParticleType getRandomParticletype(){
+    public static ParticleType getRandomParticleType(){
         switch (MathUtils.random(0, 2)){
             case 0:
                 return Triangle;

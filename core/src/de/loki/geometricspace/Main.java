@@ -27,7 +27,7 @@ public class Main extends ApplicationAdapter {
 	private EarClippingTriangulator triangulator;
 	private PolygonSpriteBatch polyBatch;
 	private Pixmap pixmap;
-	private Array<Particle> particles;
+	public static Array<Particle> particles;
 
 	@Override
 	public void create() {
@@ -61,8 +61,10 @@ public class Main extends ApplicationAdapter {
 
 		particles = new Array<Particle>();
 
+        Physics.init();
+
 		for(int i = 0; i<3; i++){
-			particles.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), MathUtils.random(500, 1000), ParticleType.getRandomParticletype()));
+			particles.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), MathUtils.random(500, 1000), ParticleType.getRandomParticleType()));
 		}
 
 	}
@@ -71,6 +73,11 @@ public class Main extends ApplicationAdapter {
 	public void render() {
 
 		Player.move();
+        Physics.render();
+
+        for(int i = 0; i<particles.size; i++){
+            particles.get(i).render();
+        }
 
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);

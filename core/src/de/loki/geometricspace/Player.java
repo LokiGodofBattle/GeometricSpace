@@ -35,4 +35,8 @@ public class Player {
         shapeRenderer.rect(position.x - sizeX/2, position.y - sizeY/2, sizeX, sizeY);
     }
 
+    public static Vector2 getPosition(){
+        return position;
+    }
+
 }

@@ -1,11 +1,13 @@
 package de.loki.geometricspace;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.PolygonRegion;
 import com.badlogic.gdx.graphics.g2d.PolygonSprite;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.EarClippingTriangulator;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ShortArray;
@@ -22,11 +24,14 @@ public class Particle {
     private float edge;
     private PolygonRegion polyRegion;
     private PolygonSprite polygonSprite;
+    private Vector2 velocity;
 
     public Particle(Vector2 position, float mass, ParticleType type){
         this.position = position;
         this.mass = mass;
         this.type = type;
+
+        velocity = new Vector2();
 
         if(type == ParticleType.Rectangle){
             edge = (float) Math.sqrt((double) mass);
@@ -48,13 +53,30 @@ public class Particle {
         if(type == ParticleType.Rectangle) shapeRenderer.rect(position.x - edge / 2, position.y - edge / 2, edge, edge);
         else if(type == ParticleType.Circle) shapeRenderer.circle(position.x, position.y, edge);
         else if(type == ParticleType.Triangle){
-            ShortArray indices = triangulator.computeTriangles(polygon.getVertices());
-            polyRegion = new PolygonRegion(textureRegion, polygon.getVertices(), indices.toArray());
+            ShortArray indices = triangulator.computeTriangles(polygon.getTransformedVertices());
+            polyRegion = new PolygonRegion(textureRegion, polygon.getTransformedVertices(), indices.toArray());
             polygonSprite = new PolygonSprite(polyRegion);
 
             polygonSprite.draw(polyBatch);
         }
     }
 
+    public void render(){
+        position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
+        if(type == ParticleType.Triangle){
+            Vector2 v = velocity;
+            v.scl(Gdx.graphics.getDeltaTime());
+            polygon.translate(v.x, v.y);
+        }
+    }
+
+
+    public Vector2 getPosition(){
+        return position;
+    }
+
+    public Vector2 getVelocity(){
+        return velocity;
+    }
 
 }
