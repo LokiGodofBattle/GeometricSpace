@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.EarClippingTriangulator;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ShortArray;
@@ -25,6 +24,7 @@ public class Particle {
     private PolygonRegion polyRegion;
     private PolygonSprite polygonSprite;
     private Vector2 velocity;
+    private Vector2 acceleration;
 
     public Particle(Vector2 position, float mass, ParticleType type){
         this.position = position;
@@ -32,6 +32,7 @@ public class Particle {
         this.type = type;
 
         velocity = new Vector2();
+        acceleration = new Vector2();
 
         if(type == ParticleType.Rectangle){
             edge = (float) Math.sqrt((double) mass);
@@ -62,10 +63,11 @@ public class Particle {
     }
 
     public void render(){
+        velocity.add(acceleration.cpy().scl(Gdx.graphics.getDeltaTime()));
+        velocity.limit(300);
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
         if(type == ParticleType.Triangle){
-            Vector2 v = velocity;
-            v.scl(Gdx.graphics.getDeltaTime());
+            Vector2 v = velocity.cpy().scl(Gdx.graphics.getDeltaTime());
             polygon.translate(v.x, v.y);
         }
     }
@@ -77,6 +79,10 @@ public class Particle {
 
     public Vector2 getVelocity(){
         return velocity;
+    }
+
+    public Vector2 getAccelaration(){
+        return acceleration;
     }
 
 }
