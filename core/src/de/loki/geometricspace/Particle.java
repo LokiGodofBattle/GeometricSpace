@@ -70,6 +70,11 @@ public class Particle {
             Vector2 v = velocity.cpy().scl(Gdx.graphics.getDeltaTime());
             polygon.translate(v.x, v.y);
         }
+        acceleration.scl(0);
+    }
+
+    public void applyForce(Vector2 force){
+        acceleration.add(force);
     }
 
 

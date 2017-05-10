@@ -11,7 +11,7 @@ public class Physics {
     private static float gravity;
 
     public static void init(){
-        gravity = 100000;
+        gravity = 5000;
     }
 
     public static void render(){
@@ -27,7 +27,7 @@ public class Physics {
             acceleration.nor();
             acceleration.setLength(force*1000);
 
-            Main.particles.get(i).getAccelaration().set(acceleration);
+            Main.particles.get(i).applyForce(acceleration);
         }
     }
 
