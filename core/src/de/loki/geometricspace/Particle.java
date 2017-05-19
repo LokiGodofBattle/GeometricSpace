@@ -66,8 +66,21 @@ public class Particle {
         velocity.add(acceleration.cpy().scl(Gdx.graphics.getDeltaTime()));
         velocity.limit(300);
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
+
+        if(position.x<0) position.x = 0;
+        if(position.x>Main.VIEWPORT_WIDTH) position.x = Main.VIEWPORT_WIDTH;
+        if(position.y<0) position.y = 0;
+        if(position.y>Main.getViewportHeight()) position.y = Main.getViewportHeight();
+
         if(type == ParticleType.Triangle){
             Vector2 v = velocity.cpy().scl(Gdx.graphics.getDeltaTime());
+            Vector2 diff = new Vector2(position.x + v.x, position.y + v.y);
+
+            if(diff.x<=0) v.x = -position.x;
+            if(diff.x>=Main.VIEWPORT_WIDTH) v.x = Main.VIEWPORT_WIDTH - position.x;
+            if(diff.y<=0) v.y = -position.y;
+            if(diff.y>=Main.getViewportHeight()) v.y = Main.getViewportHeight() - position.y;
+
             polygon.translate(v.x, v.y);
         }
         acceleration.scl(0);
