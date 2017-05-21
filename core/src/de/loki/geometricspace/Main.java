@@ -28,6 +28,7 @@ public class Main extends ApplicationAdapter {
 	private PolygonSpriteBatch polyBatch;
 	private Pixmap pixmap;
 	public static Array<Particle> particles;
+	public static Array<Particle> attractors;
 
 	@Override
 	public void create() {
@@ -60,11 +61,16 @@ public class Main extends ApplicationAdapter {
 		triangulator = new EarClippingTriangulator();
 
 		particles = new Array<Particle>();
+		attractors = new Array<Particle>();
 
         Physics.init();
 
 		for(int i = 0; i<3; i++){
 			particles.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), MathUtils.random(500, 1000), ParticleType.getRandomParticleType()));
+		}
+
+		for(int i = 0; i<2; i++){
+			attractors.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), 3000, ParticleType.Circle));
 		}
 
 	}
@@ -75,9 +81,13 @@ public class Main extends ApplicationAdapter {
 		Player.move();
         Physics.render();
 
-        for(int i = 0; i<particles.size; i++){
-            particles.get(i).render();
-        }
+        for(Particle p : particles){
+			p.render();
+		}
+
+		for(Particle p : attractors){
+			p.render();
+		}
 
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -87,8 +97,14 @@ public class Main extends ApplicationAdapter {
 		polyBatch.setProjectionMatrix(camera.combined);
 		polyBatch.begin();
 
-		for(int i = 0; i< particles.size; i++){
-			particles.get(i).draw(shapeRenderer, polyBatch, triangulator, textureRegion);
+		shapeRenderer.setColor(Color.BLUE);
+		for(Particle p : particles){
+			p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
+		}
+
+		shapeRenderer.setColor(Color.RED);
+		for(Particle p : attractors){
+			p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
 		}
 
 		polyBatch.end();

@@ -1,6 +1,5 @@
 package de.loki.geometricspace;
 
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -21,35 +20,40 @@ public class Physics {
 
     public static void render(){
 
-        applyGravity();
+        applyGravity(Player.getPosition().cpy());
+
+        for(Particle p : Main.attractors){
+            applyGravity(p.getPosition().cpy());
+        }
+
+        for(Particle p : Main.particles){
+            applyDrag(p);
+        }
 
     }
 
-    private static void applyGravity(){
+    private static void applyGravity(Vector2 position){
         for(Particle p : Main.particles)
         {
-            Vector2 acceleration = Player.getPosition().cpy();
-            acceleration.sub(p.getPosition().cpy());
+            Vector2 acceleration = position.cpy().sub(p.getPosition().cpy());
 
-            if(acceleration.len() <= maxLength){
-                float length = acceleration.len();
 
-                float force = (float) (gravity/ Math.pow(length, 2) *1000);
+            float length = acceleration.len();
 
-                acceleration.nor();
-                acceleration.setLength(force);
+            float force = (float) (gravity/ Math.pow(length, 2) *1000);
 
-                p.applyForce(acceleration);
-            } else {
-                applyDrag(p);
-            }
+            acceleration.nor();
+            acceleration.setLength(force);
+
+            p.applyForce(acceleration.cpy());
+
 
         }
     }
 
     private static void applyDrag(Particle p){
 
-            float force = dragForce * p.getVelocity().len() * p.getVelocity().len();
+            float force = dragForce * p.getVelocity().cpy().len() * p.getVelocity().cpy().len();
 
             Vector2 drag = p.getVelocity().cpy();
             drag.nor();
