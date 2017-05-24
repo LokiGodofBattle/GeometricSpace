@@ -45,26 +45,30 @@ public class Main extends ApplicationAdapter {
 		//Kamera zentrieren
 		camera.position.set(VIEWPORT_WIDTH / 2f, VIEWPORT_WIDTH * aspect_ratio / 2f, 0);
 
+		//Ersteugen der Zeichenobjekte
 		shapeRenderer = new ShapeRenderer();
 		polyBatch = new PolygonSpriteBatch();
 
+		//Inizialisierung
 		Player.init();
+		Physics.init();
 
-
+		//Erzeugen einer blauen Pixmap, mit dem Maßen 1x1
 		pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
 		pixmap.setColor(Color.BLUE);
 		pixmap.fill();
 
-
+		//Erzeugen einer neuen TextureRegion, die Später der PolygonRegion übergeben wird
 		textureRegion = new TextureRegion(new Texture(pixmap));
 
+		//Erzugen einer Triangulators, für das Polygon
 		triangulator = new EarClippingTriangulator();
 
+		//Erzeugen der Beiden Listen
 		particles = new Array<Particle>();
 		attractors = new Array<Particle>();
 
-        Physics.init();
-
+		//Füllen der Listen mit zufällig generierten Objekten
 		for(int i = 0; i<3; i++){
 			particles.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), MathUtils.random(500, 1000), ParticleType.getRandomParticleType()));
 		}
@@ -78,6 +82,7 @@ public class Main extends ApplicationAdapter {
 	@Override
 	public void render() {
 
+		//Rendering
 		Player.move();
         Physics.render();
 
@@ -89,19 +94,27 @@ public class Main extends ApplicationAdapter {
 			p.render();
 		}
 
+		//Zeichnen
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		//Zeichnen mit ShapeRenderer
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
 		Player.draw(shapeRenderer);
+
+		//Zeichnen mit PolyBatch
 		polyBatch.setProjectionMatrix(camera.combined);
 		polyBatch.begin();
 
+		//Zeichnen der Particle
 		shapeRenderer.setColor(Color.BLUE);
 		for(Particle p : particles){
 			p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
 		}
 
+		//Zeichnen der Attractors
 		shapeRenderer.setColor(Color.RED);
 		for(Particle p : attractors){
 			p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);

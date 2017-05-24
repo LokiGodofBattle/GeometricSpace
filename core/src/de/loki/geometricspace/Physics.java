@@ -1,5 +1,6 @@
 package de.loki.geometricspace;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -13,19 +14,22 @@ public class Physics {
     private static float maxLength;
 
     public static void init(){
-        gravity = 30000;
+        gravity = 1000;
         dragForce = 0.01f;
         maxLength = 750;
     }
 
     public static void render(){
 
+        //Auswirken der Gravitation des Spielers
         applyGravity(Player.getPosition().cpy());
 
+        //Auswirken der Gravitation der Attractors
         for(Particle p : Main.attractors){
             applyGravity(p.getPosition().cpy());
         }
 
+        //DragForce, ähnlich wie Luftwiederstand
         for(Particle p : Main.particles){
             applyDrag(p);
         }
@@ -35,16 +39,21 @@ public class Physics {
     private static void applyGravity(Vector2 position){
         for(Particle p : Main.particles)
         {
+            //Variable mit der gerechnet wird
             Vector2 acceleration = position.cpy().sub(p.getPosition().cpy());
 
-
+            //Limitierung der Länge des Vektors
             float length = acceleration.len();
+            length = MathUtils.clamp(length, 0, 350);
 
-            float force = (float) (gravity/ Math.pow(length, 2) *1000);
+            //Formel für die Gravitations Stärke
+            float force = (float) (gravity/ Math.pow(length, 2)*10000);
 
+            //Auswirken der Stärke auf den Vektor
             acceleration.nor();
             acceleration.setLength(force);
 
+            //Anwenden der Force
             p.applyForce(acceleration.cpy());
 
 
@@ -53,14 +62,17 @@ public class Physics {
 
     private static void applyDrag(Particle p){
 
-            float force = dragForce * p.getVelocity().cpy().len() * p.getVelocity().cpy().len();
+        //Formel für die Stärke des Wiederstandes
+        float force = dragForce * p.getVelocity().cpy().len() * p.getVelocity().cpy().len();
 
-            Vector2 drag = p.getVelocity().cpy();
-            drag.nor();
-            drag.scl(force);
-            drag.scl(-1);
+        //Gegengesetzte Richtung zur Velocity berechnen und Force drauf anwenden
+        Vector2 drag = p.getVelocity().cpy();
+        drag.nor();
+        drag.scl(force);
+        drag.scl(-1);
 
-            p.applyForce(drag);
+        //Force anwenden
+        p.applyForce(drag);
     }
 
 }

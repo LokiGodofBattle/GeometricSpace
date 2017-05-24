@@ -34,6 +34,7 @@ public class Particle {
         velocity = new Vector2();
         acceleration = new Vector2();
 
+        //Iniziallisierung basierend auf dem ParticleType
         if(type == ParticleType.Rectangle){
             edge = (float) Math.sqrt((double) mass);
         }
@@ -50,28 +51,37 @@ public class Particle {
 
     }
 
+    //Zeichnen basierend auf dem ParticleTyp
     public void draw(ShapeRenderer shapeRenderer, PolygonSpriteBatch polyBatch, EarClippingTriangulator triangulator, TextureRegion textureRegion){
         if(type == ParticleType.Rectangle) shapeRenderer.rect(position.x - edge / 2, position.y - edge / 2, edge, edge);
         else if(type == ParticleType.Circle) shapeRenderer.circle(position.x, position.y, edge);
         else if(type == ParticleType.Triangle){
+
+            //Updaten der Werte
             ShortArray indices = triangulator.computeTriangles(polygon.getTransformedVertices());
             polyRegion = new PolygonRegion(textureRegion, polygon.getTransformedVertices(), indices.toArray());
             polygonSprite = new PolygonSprite(polyRegion);
 
+            //Zeichnen des Polygons
             polygonSprite.draw(polyBatch);
         }
     }
 
     public void render(){
+
+        // Velocity + Acceleration
+        // Position + Velocity
         velocity.add(acceleration.cpy().scl(Gdx.graphics.getDeltaTime()));
         velocity.limit(300);
         position.add(velocity.cpy().scl(Gdx.graphics.getDeltaTime()));
 
+        //Rand Begrenzung
         if(position.x<0) position.x = 0;
         if(position.x>Main.VIEWPORT_WIDTH) position.x = Main.VIEWPORT_WIDTH;
         if(position.y<0) position.y = 0;
         if(position.y>Main.getViewportHeight()) position.y = Main.getViewportHeight();
 
+        //Nachziehen des Polygons
         if(type == ParticleType.Triangle){
             Vector2 v = velocity.cpy().scl(Gdx.graphics.getDeltaTime());
             Vector2 diff = new Vector2(position.x + v.x, position.y + v.y);
@@ -83,9 +93,12 @@ public class Particle {
 
             polygon.translate(v.x, v.y);
         }
+
+        //Zurücksetzen der Acceleration
         acceleration.scl(0);
     }
 
+    //Einwirkung von Force
     public void applyForce(Vector2 force){
         acceleration.add(force);
     }
