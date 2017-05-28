@@ -27,8 +27,7 @@ public class Main extends ApplicationAdapter {
 	private EarClippingTriangulator triangulator;
 	private PolygonSpriteBatch polyBatch;
 	private Pixmap pixmap;
-	public static Array<Particle> particles;
-	public static Array<Particle> attractors;
+	private Array<Vector2> a;
 
 	@Override
 	public void create() {
@@ -52,6 +51,7 @@ public class Main extends ApplicationAdapter {
 		//Inizialisierung
 		Player.init();
 		Physics.init();
+		ParticleManagement.init();
 
 		//Erzeugen einer blauen Pixmap, mit dem Maßen 1x1
 		pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -64,19 +64,18 @@ public class Main extends ApplicationAdapter {
 		//Erzugen einer Triangulators, für das Polygon
 		triangulator = new EarClippingTriangulator();
 
-		//Erzeugen der Beiden Listen
-		particles = new Array<Particle>();
-		attractors = new Array<Particle>();
+		a = new Array<Vector2>();
 
-		//Füllen der Listen mit zufällig generierten Objekten
-		for(int i = 0; i<3; i++){
-			particles.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), MathUtils.random(500, 1000), ParticleType.getRandomParticleType()));
+		for(int i = 0; i<ParticleManagement.movementComplexity; i++){
+			a.add(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH),(getViewportHeight()/(ParticleManagement.movementComplexity-1))*i));
 		}
 
-		for(int i = 0; i<2; i++){
-			attractors.add(new Particle(new Vector2(MathUtils.random(0, VIEWPORT_WIDTH), MathUtils.random(0, getViewportHeight())), 3000, ParticleType.Circle));
-		}
+		float r = (float) Math.sqrt((double) 750);
 
+		a.get(0).y -= r;
+		a.get(a.size-1).y += r;
+
+		ParticleManagement.spawners.add(new Spawner(750, ParticleType.Circle, a));
 	}
 
 	@Override
@@ -85,14 +84,7 @@ public class Main extends ApplicationAdapter {
 		//Rendering
 		Player.move();
         Physics.render();
-
-        for(Particle p : particles){
-			p.render();
-		}
-
-		for(Particle p : attractors){
-			p.render();
-		}
+		ParticleManagement.render();
 
 		//Zeichnen
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -108,16 +100,10 @@ public class Main extends ApplicationAdapter {
 		polyBatch.setProjectionMatrix(camera.combined);
 		polyBatch.begin();
 
-		//Zeichnen der Particle
-		shapeRenderer.setColor(Color.BLUE);
-		for(Particle p : particles){
-			p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
-		}
+		ParticleManagement.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
 
-		//Zeichnen der Attractors
-		shapeRenderer.setColor(Color.RED);
-		for(Particle p : attractors){
-			p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
+		for(Vector2 v : a){
+			shapeRenderer.rect(v.x-25, v.y-25, 50, 50);
 		}
 
 		polyBatch.end();

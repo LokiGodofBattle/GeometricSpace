@@ -25,19 +25,19 @@ public class Physics {
         applyGravity(Player.getPosition().cpy());
 
         //Auswirken der Gravitation der Attractors
-        for(Particle p : Main.attractors){
+        for(Particle p : ParticleManagement.attractors){
             applyGravity(p.getPosition().cpy());
         }
 
         //DragForce, ähnlich wie Luftwiederstand
-        for(Particle p : Main.particles){
+        for(Particle p : ParticleManagement.particles){
             applyDrag(p);
         }
 
     }
 
     private static void applyGravity(Vector2 position){
-        for(Particle p : Main.particles)
+        for(Particle p : ParticleManagement.particles)
         {
             //Variable mit der gerechnet wird
             Vector2 acceleration = position.cpy().sub(p.getPosition().cpy());
