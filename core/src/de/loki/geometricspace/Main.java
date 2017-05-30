@@ -2,15 +2,10 @@ package de.loki.geometricspace;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
@@ -22,11 +17,8 @@ public class Main extends ApplicationAdapter {
 	private Viewport viewport;
 	public final static int VIEWPORT_WIDTH = 1440;
 	private static float aspect_ratio;
-	private ShapeRenderer shapeRenderer;
-	private TextureRegion textureRegion;
-	private EarClippingTriangulator triangulator;
-	private PolygonSpriteBatch polyBatch;
-	private Pixmap pixmap;
+	public static ShapeRenderer shapeRenderer;
+	public static PolygonSpriteBatch polyBatch;
 	private Array<Vector2> a;
 
 	@Override
@@ -53,17 +45,6 @@ public class Main extends ApplicationAdapter {
 		Physics.init();
 		ParticleManagement.init();
 
-		//Erzeugen einer blauen Pixmap, mit dem Maßen 1x1
-		pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-		pixmap.setColor(Color.BLUE);
-		pixmap.fill();
-
-		//Erzeugen einer neuen TextureRegion, die Später der PolygonRegion übergeben wird
-		textureRegion = new TextureRegion(new Texture(pixmap));
-
-		//Erzugen einer Triangulators, für das Polygon
-		triangulator = new EarClippingTriangulator();
-
 		a = new Array<Vector2>();
 
 		for(int i = 0; i<ParticleManagement.movementComplexity; i++){
@@ -75,7 +56,7 @@ public class Main extends ApplicationAdapter {
 		a.get(0).y -= r;
 		a.get(a.size-1).y += r;
 
-		ParticleManagement.spawners.add(new Spawner(750, ParticleType.Circle, a));
+		ParticleManagement.spawners.add(new Spawner(750, a));
 	}
 
 	@Override
@@ -100,7 +81,7 @@ public class Main extends ApplicationAdapter {
 		polyBatch.setProjectionMatrix(camera.combined);
 		polyBatch.begin();
 
-		ParticleManagement.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
+		ParticleManagement.draw();
 
 		for(Vector2 v : a){
 			shapeRenderer.rect(v.x-25, v.y-25, 50, 50);

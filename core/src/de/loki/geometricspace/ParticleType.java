@@ -1,30 +1,21 @@
 package de.loki.geometricspace;
 
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 
 /**
  * Created by Loki on 28.04.2017.
  */
-public enum ParticleType {
+public class ParticleType {
 
-    Triangle(0),
-    Rectangle(1),
-    Circle(2);
-
-    private int value;
-
-    private ParticleType(int value) {
-        this.value = value;
-    }
-
-    public static ParticleType getRandomParticleType(){
+    public static Particle getRandomParticle(Vector2 position, float mass){
         switch (MathUtils.random(0, 2)){
             case 0:
-                return Triangle;
+                return new TriangleParticle(position, mass);
             case 1:
-                return Rectangle;
+                return new RectangleParticle(position, mass);
             case 2:
-                return Circle;
+                return new CircleParticle(position, mass);
             default:
                 break;
         }

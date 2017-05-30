@@ -1,9 +1,9 @@
 package de.loki.geometricspace;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.PolygonSpriteBatch;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.EarClippingTriangulator;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -21,6 +21,9 @@ public class ParticleManagement {
     public static Array<Spawner> spawners;
     public static Array<Particle> toRemoveParticles;
     public static Array<Spawner> toRemoveSpawners;
+    public static EarClippingTriangulator triangulator;
+    public static TextureRegion textureRegion;
+    public static Pixmap pixmap;
 
     public static int movementComplexity;
 
@@ -35,9 +38,20 @@ public class ParticleManagement {
 
         movementComplexity = 5;
 
+        //Erzugen einer Triangulators, für das Polygon
+        triangulator = new EarClippingTriangulator();
+
+        //Erzeugen einer blauen Pixmap, mit dem Maßen 1x1
+        pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.BLUE);
+        pixmap.fill();
+
+        //Erzeugen einer neuen TextureRegion, die Später der PolygonRegion übergeben wird
+        textureRegion = new TextureRegion(new Texture(pixmap));
+
         //Füllen der Listen mit zufällig generierten Objekten
         for(int i = 0; i<3; i++){
-            particles.add(new Particle(new Vector2(MathUtils.random(0, Main.VIEWPORT_WIDTH), MathUtils.random(0, Main.getViewportHeight())), MathUtils.random(500, 1000), ParticleType.getRandomParticleType()));
+            particles.add(ParticleType.getRandomParticle(new Vector2(MathUtils.random(0, Main.VIEWPORT_WIDTH), MathUtils.random(0, Main.getViewportHeight())), MathUtils.random(500, 1000)));
         }
 
     }
@@ -62,23 +76,23 @@ public class ParticleManagement {
         }
     }
 
-    public static void draw(ShapeRenderer shapeRenderer, PolygonSpriteBatch polyBatch, EarClippingTriangulator triangulator, TextureRegion textureRegion){
+    public static void draw(){
 
         //Zeichnen der Particle
-        shapeRenderer.setColor(Color.BLUE);
+        Main.shapeRenderer.setColor(Color.BLUE);
         for(Particle p : particles){
-            p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
+            p.draw();
         }
 
         //Zeichnen der Attractors
-        shapeRenderer.setColor(Color.RED);
+        Main.shapeRenderer.setColor(Color.RED);
         for(Particle p : attractors){
-            p.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
+            p.draw();
         }
 
-        shapeRenderer.setColor(Color.GREEN);
+        Main.shapeRenderer.setColor(Color.GREEN);
         for(Spawner s : spawners){
-            s.draw(shapeRenderer, polyBatch, triangulator, textureRegion);
+            s.draw();
         }
 
     }
